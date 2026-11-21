@@ -1,22 +1,22 @@
-"""FastAPI entrypoint: single-layer INT8 conv accumulator width inspector."""
+"""FastAPI entrypoint: INT8 conv accumulator width + weight-layout checks."""
 
 from __future__ import annotations
 
 from fastapi import FastAPI, HTTPException
 
 from analyzer import MAX_WORK_ITEMS, WorkTooLarge, analyze_spec
-from schemas import AnalyzeRequest
+from layout import LayoutError, check_layout
+from schemas import AnalyzeRequest, LayoutCheckRequest
 
 app = FastAPI(
-    title="INT8 Conv Accumulator Width Inspector",
-    version="1.0.0",
+    title="INT8 Conv Accumulator Inspector",
+    version="1.1.0",
     description=(
-        "Checks one quantized INT8 conv layer (stride 1, odd kernel, zero-point "
-        "padding, same output size) for the minimum signed accumulator bit "
-        "width that is safe at every output position and every accumulation "
-        "step. If the target width is insufficient, returns the earliest "
-        "possible overflow with output coordinates and the local inputs that "
-        "reproduce it."
+        "Two checks for one quantized INT8 conv layer (stride 1, odd kernel, "
+        "zero-point padding, same output size). /v1/analyze reports the minimum "
+        "safe signed accumulator width. /v1/layout-check decodes a device packed "
+        "kernel buffer, compares it element-wise against reference weights, and "
+        "replays a concrete uint8 feature map to localise the first divergence."
     ),
 )
 
@@ -42,10 +42,36 @@ def analyze(req: AnalyzeRequest) -> dict:
         raise HTTPException(status_code=413, detail=str(exc)) from exc
 
 
+@app.post("/v1/layout-check")
+def layout_check(req: LayoutCheckRequest) -> dict:
+    try:
+        return check_layout(
+            feature_map_data=req.feature_map.data,
+            feature_map_height=req.feature_map.height,
+            feature_map_width=req.feature_map.width,
+            zero_points=req.input_zero_points,
+            reference_weights=req.weights,
+            bias=req.bias,
+            dimensions=req.dimensions,
+            decoded_axis_order=req.layout.decoded_axis_order,
+            packed_axis_order=req.layout.packed_axis_order,
+            packed_base64=req.packed_weights_base64,
+        )
+    except LayoutError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except WorkTooLarge as exc:
+        raise HTTPException(status_code=413, detail=str(exc)) from exc
+
+
 @app.get("/")
 def index() -> dict:
     return {
         "service": "int8-conv-accumulator-inspector",
-        "endpoints": {"analyze": "POST /v1/analyze", "health": "GET /health", "docs": "GET /docs"},
+        "endpoints": {
+            "analyze": "POST /v1/analyze",
+            "layout_check": "POST /v1/layout-check",
+            "health": "GET /health",
+            "docs": "GET /docs",
+        },
         "limits": {"work_items": MAX_WORK_ITEMS},
     }

@@ -1,0 +1,166 @@
+{
+  "weights": [
+    [
+      [
+        [
+          3,
+          -2,
+          1
+        ],
+        [
+          0,
+          4,
+          -1
+        ],
+        [
+          2,
+          1,
+          -3
+        ]
+      ],
+      [
+        [
+          -1,
+          2,
+          0
+        ],
+        [
+          3,
+          -3,
+          1
+        ],
+        [
+          0,
+          1,
+          2
+        ]
+      ]
+    ],
+    [
+      [
+        [
+          1,
+          1,
+          1
+        ],
+        [
+          1,
+          2,
+          1
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ],
+      [
+        [
+          -2,
+          0,
+          2
+        ],
+        [
+          -2,
+          1,
+          2
+        ],
+        [
+          -2,
+          0,
+          2
+        ]
+      ]
+    ]
+  ],
+  "bias": [
+    120,
+    -40
+  ],
+  "feature_map": {
+    "height": 4,
+    "width": 4,
+    "data": [
+      [
+        [
+          48,
+          65,
+          82,
+          99
+        ],
+        [
+          109,
+          126,
+          143,
+          160
+        ],
+        [
+          170,
+          187,
+          204,
+          221
+        ],
+        [
+          231,
+          248,
+          9,
+          26
+        ]
+      ],
+      [
+        [
+          85,
+          102,
+          119,
+          136
+        ],
+        [
+          146,
+          163,
+          180,
+          197
+        ],
+        [
+          207,
+          224,
+          241,
+          2
+        ],
+        [
+          12,
+          29,
+          46,
+          63
+        ]
+      ]
+    ]
+  },
+  "input_zero_points": [
+    128,
+    100
+  ],
+  "dimensions": {
+    "output_channels": 2,
+    "input_channels": 2,
+    "kernel_height": 3,
+    "kernel_width": 3,
+    "output_channel_block": 2,
+    "input_channel_block": 2,
+    "kernel_block": 2
+  },
+  "layout": {
+    "decoded_axis_order": [
+      "oc",
+      "cin",
+      "ky",
+      "kx"
+    ],
+    "packed_axis_order": [
+      "kx",
+      "ky",
+      "cin",
+      "oc"
+    ]
+  },
+  "packed_weights_base64": "AwH//gABA/4CAQD+AAAAAP4BAgAEAv0BAQEBAAAAAAABAQAC/wECAv0BAgIAAAAAAAAAAAAAAAAAAAAAAAAAAA=="
+}
